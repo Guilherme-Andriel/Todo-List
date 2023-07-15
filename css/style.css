@@ -13,7 +13,6 @@ body {
   background-color: #161d34;
   display: flex;
   justify-content: center;
-  width: 100vw;
 }
 
 button {
@@ -130,6 +129,10 @@ select {
 
 @media (max-width: 355px){ 
   .todo-container {
-    width: 330px;
+    width: 280px;
+  }
+  .form-control input {
+    width: 180px;
+
   }
 }
