@@ -8,12 +8,16 @@ const cancelEditBtn = document.querySelector("#cancel-edit-btn");
 
 const todoList = document.querySelector("#todo-list");
 
+const searchInput = document.querySelector("#search-input");
+const eraseBtn = document.querySelector("#erase-button");
+const filterBtn = document.querySelector("#filter-select");
+
 let oldInputValue;
 
 
 
 // Funções
-const saveTodo = (text) => {
+const saveTodo = (text, done = 0, save = 1) => {
   const todo = document.createElement("div");
   todo.classList.add("todo");
 
@@ -35,6 +39,14 @@ const saveTodo = (text) => {
   deleteBtn.classList.add("remove-todo");
   deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
   todo.appendChild(deleteBtn);
+
+  // Utilizando dados da localstorage
+
+  if(done){
+    todo.classList.add("done")
+  }if(save){
+    saveTodoLocalStorage({text, done})
+  }
 
   todoList.appendChild(todo);
 
@@ -60,11 +72,49 @@ const updateTodo = (text) => {
     if (todoTitle.innerText === oldInputValue) {
       todoTitle.innerText = text;
 
+
+      updateTodosLocalStorage(oldInputValue, text)
     }
   });
 };
 
 
+function getSearchTodos(search){
+
+  const todos = document.querySelectorAll(".todo");
+
+  todos.forEach((todo) => {
+    let todoTitle = todo.querySelector("h3").innerText.toLowerCase();
+    const normalizedSearch = search.toLowerCase()
+
+    todo.style.display = "flex"
+    if(!todoTitle.includes(normalizedSearch)){
+      todo.style.display = "none"
+    }
+
+    })
+  
+}
+
+
+const filterTodos = (filterValue) =>{
+
+  const todos = document.querySelectorAll(".todo");
+
+  switch(filterValue){
+    case "all":
+      todos.forEach((todo) =>(todo.style.display = "flex"))
+      break;
+    
+    case "done":
+      todos.forEach((todo) => todo.classList.contains("done")?(todo.style.display ="flex"):(todo.style.display ="none"))
+      break;
+
+    case "todo":
+      todos.forEach((todo) => !todo.classList.contains("done")?(todo.style.display ="flex"):(todo.style.display ="none"))
+      break;
+  }
+}
 
 
 
@@ -94,11 +144,14 @@ document.addEventListener("click", (e) => {
   if (targetEl.classList.contains("finish-todo")) {
     parentEl.classList.toggle("done");
 
+    updateTodosStatusLocalStorage(todoTitle)
+
   }
 
   if (targetEl.classList.contains("remove-todo")) {
     parentEl.remove();
 
+    removeTodosLocalStorage(todoTitle)
   }
 
   if (targetEl.classList.contains("edit-todo")) {
@@ -129,3 +182,90 @@ editForm.addEventListener("submit", (e) => {
 
   toggleForms();
 });
+
+searchInput.addEventListener("keyup", (e) =>{
+
+  const search = e.target.value
+
+  getSearchTodos(search)
+})
+
+
+eraseBtn.addEventListener("click", (e) =>{
+
+  e.preventDefault()
+  searchInput.value = ""
+
+  searchInput.dispatchEvent(new Event("keyup"))
+})
+
+filterBtn.addEventListener("change", (e) =>{
+
+  const filterValue = e.target.value
+  filterTodos(filterValue)
+  
+})
+
+
+
+
+// Local STorage 
+
+const getTodoLocalStorage = () =>{
+  const todos = JSON.parse(localStorage.getItem("todos")) || []
+
+  return todos;
+}
+
+const loadTodos = ()=>{
+
+  const todos = getTodoLocalStorage()
+
+  todos.forEach((todo) =>{
+    saveTodo(todo.text, todo.done, 0)
+  })
+}
+
+const saveTodoLocalStorage = (todo) =>{
+  const todos = getTodoLocalStorage()
+
+  todos.push(todo)
+
+  localStorage.setItem("todos", JSON.stringify(todos))
+
+}
+
+const removeTodosLocalStorage = (todoText) =>{
+
+  const todos = getTodoLocalStorage()
+
+  // apenas titulos que não serão removidos
+  const filteredTodos = todos.filter((todo) => todo.text != todoText)
+
+  localStorage.setItem("todos", JSON.stringify(filteredTodos))
+}
+
+const updateTodosStatusLocalStorage = (todoText) =>{
+
+  const todos = getTodoLocalStorage()
+
+  
+ todos.map((todo) => todo.text === todoText ? (todo.done = !todo.done): null)
+
+  localStorage.setItem("todos", JSON.stringify(todos))
+}
+
+
+const updateTodosLocalStorage = (todoOldText, todoNewText) =>{
+
+  const todos = getTodoLocalStorage()
+
+  
+ todos.map((todo) => todo.text === todoOldText ? (todo.text = todoNewText): null)
+
+  localStorage.setItem("todos", JSON.stringify(todos))
+}
+
+
+
+loadTodos()

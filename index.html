@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda</title>
+    <title>Todo List</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
@@ -23,7 +23,7 @@
 <body>
     <div class="todo-container">
         <header>
-          <h1>Agenda <i class="fa-solid fa-calendar-days"></i></h1>
+          <h1>Todo List <i class="fa-solid fa-calendar-days"></i></h1>
         </header>
 
         <form id="todo-form">
@@ -50,6 +50,28 @@
           </div>
           <button id="cancel-edit-btn">Cancelar</button>
         </form>
+
+        <div id="toolbar">
+         <div id="search">
+          <h4>Pesquisar:</h4>
+          <form>
+            <input type="text" id="search-input" placeholder="Buscar">
+            <button id="erase-button">
+              <i class="fa-solid fa-delete-left"></i>
+            </button>
+          </form>
+         </div>
+
+         <div id="filter">
+          <h4>Filtrar:</h4>
+          <select id="filter-select">
+            <option value="all">Todos</option>
+            <option value="done">Feitos</option>
+            <option value="todo">A fazer</option>
+          </select>
+      </div>
+      
+        </div>
 
         <div id="todo-list">
 
